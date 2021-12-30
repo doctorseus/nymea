@@ -230,8 +230,16 @@ ZigbeeManager::ZigbeeError ZigbeeManager::setZigbeeNetworkPermitJoin(const QUuid
         return ZigbeeManager::ZigbeeErrorNetworkOffline;
     }
 
-    qCDebug(dcZigbee()) << "Set permit joining in network" << network << "to" << duration << "seconds" << ZigbeeUtils::convertUint16ToHexString(shortAddress);
-    network->setPermitJoining(duration, shortAddress);
+    if (network->hasNode(shortAddress)) {
+        ZigbeeNode *node = network->getZigbeeNode(shortAddress);
+        // We have a short address of a node, lets unicast the request
+        qCDebug(dcZigbee()) << "Set permit joining" << node << "to" << duration << "seconds" << ZigbeeUtils::convertUint16ToHexString(shortAddress);
+        node->deviceObject()->requestMgmtPermitJoining(duration);
+    } else {
+        // Probably a broadcast address, let the network handle this
+        qCDebug(dcZigbee()) << "Set permit joining in network" << network << "to" << duration << "seconds" << ZigbeeUtils::convertUint16ToHexString(shortAddress);
+        network->setPermitJoining(duration, shortAddress);
+    }
 
     // Notify all clients about the new configuration
     emit zigbeeNetworkChanged(network);

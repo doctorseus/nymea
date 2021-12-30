@@ -60,6 +60,7 @@ public:
 
     Q_INVOKABLE JsonReply *GetNodes(const QVariantMap &params);
     Q_INVOKABLE JsonReply *RemoveNode(const QVariantMap &params);
+    Q_INVOKABLE JsonReply *UpdateNodeNeighborTable(const QVariantMap &params);
 
     QVariantMap packNetwork(ZigbeeNetwork *network);
     QVariantMap packNode(ZigbeeNode *node);
